@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+
 import "./styles/login.css";
 
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
-import User from "./models/User";
 import 'boxicons'
+import { CreateUser } from "./services/login.service.ts";
 
-const Login: React.FC = () => {
+const Login = () => {
+  const navigate = useNavigate();
+
   const [user, setUser] = useState(null);
-  const [userInfo, setUserInfo] = useState<User>();
+  const [userInfo, setUserInfo] = useState(null);
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => setUser(codeResponse),
@@ -27,20 +31,20 @@ const Login: React.FC = () => {
             },
           }
         )
-        .then((res) => {
-          setUserInfo({
+        .then(async (res) => {
+          const model = {
             email: res.data.email,
             name: res.data.name,
             picture: res.data.picture,
             token: user.access_token,
             roleId: 1,
-          });
-          console.log(userInfo);
-          localStorage.setItem("token", user.access_token);
+          }
+          await CreateUser(model);
+          navigate('/');
         })
         .catch((err) => console.log(err));
     }
-  }, [user, userInfo]);
+  }, [user]);
 
   return (
     <>
