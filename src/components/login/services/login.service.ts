@@ -10,7 +10,6 @@ export const createUser = async (model: User) => {
     const response = await axios.post(`${baseURL}/user/add`, model);
     const result: UserResponse = response.data;
     localStorage.setItem("email", result.data.email);
-    console.log(result);
   } catch (error) {
     console.error('Error:', error);
   }
@@ -24,6 +23,7 @@ export const getUserByEmail = async (email: string) => {
     return result.data;
   } catch (error) {
     console.error('Error:', error);
+    return null;
   }
 }
 
@@ -34,8 +34,6 @@ export const assignUserIntoFreeSubscription = async (userId: string, subscriptio
       "userId": userId,
       "subscriptionId": subscriptionId
     }
-
-    console.log(body);
     const response = await axios.post(`${baseURL}/subscription/assignUserIntoSubscription`, body);
     const result = response.data;
     return result.data;

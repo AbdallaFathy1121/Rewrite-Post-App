@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 
 import "./styles/login.css";
+import toast from 'react-hot-toast';
 
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
@@ -12,6 +13,12 @@ const Login = () => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
+
+  const assignUserToFreeSubscriptionNotify = () => toast.success(" تم التسجيل بنجاح والاشتراك فى الباقة المجانية بنجاح",  {
+    duration: 6000,
+  });
+
+  const loginSuccssNotify = () => toast.success(" تم التسجيل بنجاح");
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => setUser(codeResponse),
@@ -24,8 +31,10 @@ const Login = () => {
       await createUser(model);
       // Assign User Into Free Subscription
       await assignUserIntoFreeSubscription(model.id);
+      assignUserToFreeSubscriptionNotify();
     } else {
       localStorage.setItem("email", model.email);
+      loginSuccssNotify();
     }
   }
 

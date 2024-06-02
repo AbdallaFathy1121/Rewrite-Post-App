@@ -4,6 +4,7 @@ import React from 'react';
 import {BrowserRouter as Router , Route , Routes, useLocation  } from 'react-router-dom';
 import Login from './components/Login/login.jsx';
 import Layout from './Pages/Layout/layout.jsx';
+import { Toaster } from 'react-hot-toast';
 
 
 const App = () => {
@@ -14,10 +15,11 @@ const App = () => {
 
   return (
     <>
-    {!isLoginPage && <Layout />}
+      {!isLoginPage && <Layout />}
       <Routes>
         <Route path='/login' element={<Login/>} />
       </Routes>
+      <Toaster />
     </>
   );
 };

@@ -3,10 +3,10 @@ import { Route, Routes, NavLink, Link } from "react-router-dom";
 import Post from "../../components/Post/post";
 import Subscriptions from "../../components/Subscriptions/subscriptions";
 import "./layout.style.css";
-import { getUserByEmail } from "./services/layout.service.ts";
-import { assignUserIntoFreeSubscription } from "../../components/Login/services/login.service.ts";
+import { getUserByEmail } from "../../components/Login/services/login.service.ts";
 import { useNavigate } from 'react-router-dom';
-
+import toast from 'react-hot-toast';
+import { Navbar} from 'react-bootstrap';
 
 import instagram from "./image/instagram.png"
 import app from "./image/Image 1.png"
@@ -32,32 +32,38 @@ const Layout = () => {
     }
   };
 
+  const logoutSuccssNotify = () => toast.success(" تم تسجيل الخروج بنجاح");
+
+
   const handleLogout  = () => {
     const email = localStorage.getItem("email");
     if (email) {
       localStorage.removeItem('email');
       navigate('/login');
+      logoutSuccssNotify();
     }
   }
 
   useEffect(() => {
-
     // Get User Data By Email
     const fetchUser = async () => {
       try {
         const email = localStorage.getItem("email");
-        const result = await getUserByEmail(email);
-        if (result.email == null) {
+        if (email == null) {
           navigate('/login');
         } else {
-          setUserData(result);
+          const result = await getUserByEmail(email);
+          if (result == null || !result.name) {
+            localStorage.removeItem("email");
+            navigate('/login');
+          } else {
+            setUserData(result);
+          }
         }
       } catch (error) {}
     };
     fetchUser();
     
-
-
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
@@ -82,19 +88,9 @@ const Layout = () => {
 
   return (
     <>
-      <nav className={isNavFixed ? 'nav-fixed navbar navbar-expand-lg navbar-light' : 'navbar navbar-expand-lg navbar-light'} >
+      <nav className={isNavFixed ? 'nav-fixed navbar navbar-expand-sm navbar-light' : 'navbar navbar-expand-sm navbar-light'} >
         <div className="container">
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-toggle="collapse"
-            data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
+        <Navbar.Toggle />
 
           <div className="dropdown-container" ref={dropdownRef}>
             <div className="dropdown right" open={isOpen}>
@@ -135,17 +131,17 @@ const Layout = () => {
             </div>
           </div>
 
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          <Navbar.Collapse>
             <ul className="navbar-nav">
               <li className="nav-item active">
-                <NavLink className="nav-link" to="/">
+                <NavLink as={Link} className="nav-link" to="/">
                   الرئيسية
                 </NavLink>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="account.html">
+                <NavLink className="nav-link" to="/account">
                   حسابى
-                </a>
+                </NavLink>
               </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/subscriptions">
@@ -153,7 +149,7 @@ const Layout = () => {
                 </NavLink>
               </li>
             </ul>
-          </div>
+          </Navbar.Collapse>
         </div>
       </nav>
 
@@ -164,31 +160,31 @@ const Layout = () => {
         </Routes>
       </div>
 
-      <div class="footer">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-4 mb-lg-0 mb-4" data-aos-delay="100" data-aos-duration="800" data-aos="zoom-in-down" >
+      <div className="footer">
+            <div className="container">
+                <div className="row">
+                    <div className="col-lg-4 mb-lg-0 mb-4" data-aos-delay="100" data-aos-duration="800" data-aos="zoom-in-down" >
                         <h4>من نحن</h4>
                         <p>
                             هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص العربى، حيث يمكنك أن تولد مثل هذا النص أو العديد من النصوص الأخرى إضافة إلى زيادة عدد الحروف التى يولدها التطبيق.
                         </p>
                     </div>
-                    <div class="col-lg-4 mb-lg-0 mb-5 center" data-aos-delay="100" data-aos-duration="800" data-aos="zoom-in-down">
+                    <div className="col-lg-4 mb-lg-0 mb-5 center" data-aos-delay="100" data-aos-duration="800" data-aos="zoom-in-down">
                         <ul>
                             <li data-aos-delay="200" data-aos-duration="800" data-aos="zoom-in">
-                                <i class="fas fa-map-marker-alt"></i>
+                                <i className="fas fa-map-marker-alt"></i>
                                 عنوان الشركة
                             </li>
                             <li data-aos-delay="200" data-aos-duration="800" data-aos="zoom-in">
-                                <i class="fas fa-phone-square"></i>
+                                <i className="fas fa-phone-square"></i>
                                 الادارة: 65116146
                             </li>
                             <li data-aos-delay="200" data-aos-duration="800" data-aos="zoom-in">
-                                <i class="fas fa-headphones-alt"></i>
+                                <i className="fas fa-headphones-alt"></i>
                                 الدعم الفني: 66058882
                             </li>
                             <li data-aos-delay="200" data-aos-duration="800" data-aos="zoom-in">
-                                <i class="fas fa-envelope"></i>
+                                <i className="fas fa-envelope"></i>
                                 البرید الالکترونی info@ajrnii.com
                             </li>
                         </ul>
@@ -208,20 +204,20 @@ const Layout = () => {
                         </a>
 
                     </div>
-                    <div class="col-lg-4 left" data-aos-delay="100" data-aos-duration="800" data-aos="zoom-in-down">
+                    <div className="col-lg-4 left" data-aos-delay="100" data-aos-duration="800" data-aos="zoom-in-down">
                         <h4>حمل التطبيق الان </h4>
-                        <img class="bg" src={mobile} alt=""/>
+                        <img className="bg" src={mobile} alt=""/>
                         <a href="#">
-                            <img class="app" src={app} alt=""/>
+                            <img className="app" src={app} alt=""/>
                         </a>
                     </div>
                 </div>
             </div>
-            <div class="copy">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-6 text-md-right text-center mb-md-0 mb-2">جميع الحقوق محفوظة لشركة </div>
-                        <div class="col-md-6 text-md-left text-center">تصميم وبرمجة فريق Abdallah Fathy</div>
+            <div className="copy">
+                <div className="container">
+                    <div className="row">
+                        <div className="col-md-6 text-md-right text-center mb-md-0 mb-2">جميع الحقوق محفوظة لشركة </div>
+                        <div className="col-md-6 text-md-left text-center">تصميم وبرمجة فريق Abdallah Fathy</div>
                     </div>
                 </div>
             </div>
