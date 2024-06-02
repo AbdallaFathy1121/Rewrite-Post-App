@@ -12,7 +12,6 @@ const Login = () => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
-  const [userInfo, setUserInfo] = useState(null);
 
   const login = useGoogleLogin({
     onSuccess: (codeResponse) => setUser(codeResponse),

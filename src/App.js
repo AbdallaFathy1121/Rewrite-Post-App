@@ -1,20 +1,24 @@
-import logo from './logo.svg';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
-import {BrowserRouter as Router , Route , Routes} from 'react-router-dom';
+import {BrowserRouter as Router , Route , Routes, useLocation  } from 'react-router-dom';
 import Login from './components/Login/login.jsx';
-import Layout from './Pages/layout.jsx';
+import Layout from './Pages/Layout/layout.jsx';
 
 
 const App = () => {
+  const location = useLocation();
+
+  // Check if the current route is the login page
+  const isLoginPage = location.pathname === '/login';
+
   return (
-    <Router>
-        <Routes>
-          <Route exact path='/' element={<Layout />} />
-          <Route path='/login' element={<Login/>} />
-        </Routes>
-    </Router>
+    <>
+    {!isLoginPage && <Layout />}
+      <Routes>
+        <Route path='/login' element={<Login/>} />
+      </Routes>
+    </>
   );
 };
 

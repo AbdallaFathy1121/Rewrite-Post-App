@@ -1,0 +1,341 @@
+.dropdown-container {
+    display: inline-block;
+    padding: 10px;
+  }
+  .dropdown-container .dropdown {
+    position: relative;
+  }
+  .dropdown-container .dropdown[open] .with-down-arrow::after {
+    content: "";
+  }
+  .dropdown-container .dropdown[open] div {
+    background: #ffffff10;
+  }
+  .dropdown-container .dropdown div {
+    list-style: none;
+    display: inline-block;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+  .dropdown-container .dropdown div.avatar {
+    border-radius: 50px;
+  }
+  .dropdown-container .dropdown div.avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50px;
+    display: inline-block;
+    margin: 0;
+  }
+  .dropdown-container .dropdown div .with-down-arrow {
+    display: inline-flex;
+    padding: 5px;
+    align-items: center;
+    color: #fff;
+    line-height: 1;
+  }
+  .dropdown-container .dropdown div .with-down-arrow::after {
+    content: "";
+    font-family: "Material Symbols Outlined";
+    font-weight: normal;
+    font-style: normal;
+    font-size: 1.5rem;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+  }
+  .dropdown-container .dropdown.left ul {
+    left: 0;
+  }
+  .dropdown-container .dropdown.right ul {
+    left: 0;
+  }
+  .dropdown-container .dropdown ul {
+    padding: 0;
+    margin: 0;
+    box-shadow: 0 0 10px #00000030;
+    min-width: max-content;
+    position: absolute;
+    top: 100%;
+    border-radius: 10px;
+    background-color: #fff;
+    z-index: 2;
+  }
+  .dropdown-container .dropdown ul li {
+    list-style-type: none;
+    display: block;
+    text-align: left;
+    /* If you use divider & borders, it's best to use top borders */
+    /*border-top: 1px solid #ccc;*/
+  }
+  .dropdown-container .dropdown ul li:first-of-type {
+    border: none;
+    background-color: #f2f2f2;
+  }
+  .dropdown-container .dropdown ul li p {
+    padding: 10px 15px;
+    margin: 0;
+  }
+  .dropdown-container .dropdown ul li button {
+    border: none;
+    outline: none;
+    padding: 10px 15px;
+    color: #333;
+    text-align: center;
+    background-color: transparent;
+    width: 100%;
+  }
+  .dropdown-container .dropdown ul li button:hover {
+    color: #062C69;
+  }
+  .dropdown-container .dropdown ul li:first-of-type {
+    border-radius: 10px 10px 0 0;
+  }
+  .dropdown-container .dropdown ul li:last-of-type {
+    border-radius: 0 0 10px 10px;
+  }
+  .dropdown-container .dropdown ul li.divider {
+    border: none;
+    border-bottom: 1px solid #333;
+    /* 
+     * removes border from Li after the divider element
+     * best used in combination with top borders on other LIs 
+     */
+  }
+  .dropdown-container .dropdown ul li.divider ~ li {
+    border: none;
+  }
+  
+  .dropdown-container ul li a  {
+    text-align: center !important;
+  }
+
+  .dropdown-container ul .tab {
+    padding: 5px 10px;
+  }
+
+  nav {
+    background-color: white;
+    font-size: 18px;
+    direction: ltr;
+    padding: 12px 0 !important;
+}
+
+nav ul {
+    margin: auto;
+}
+
+.nav-fixed {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    box-shadow: 0px 2px 4px 0px #545b622e;
+}
+
+@media (max-width: 576px) {
+    nav {
+        font-size: 16px;
+    }
+}
+
+nav .collapse {
+    direction: rtl;
+}
+
+nav a {
+    margin-left: 10px;
+}
+
+nav .active {
+    color: #000000;
+    font-weight: bold;
+}
+
+nav .lang {
+    position: relative;
+    background-color: #000;
+    color: #fff;
+    outline: none;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 8px;
+    margin-right: 15px;
+    width: max-content;
+}
+
+nav .lang svg {
+    margin-right: 5px;
+}
+
+nav .lang .slide-toggle {
+    position: absolute;
+    left: -8px;
+    top: 40px;
+    z-index: 9999;
+    background-color: #fff;
+    color: #000;
+    padding: 10px 39px;
+    border-radius: 4px;
+    display: none;
+    box-shadow: 0 2px 2px #00000029;
+}
+
+.overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 0;
+    background: #0000008a;
+    z-index: 999;
+    opacity: 1;
+}
+
+@media (max-width: 991.98px) {
+    .navbar-expand-lg > .container, .navbar-expand-lg > .container-fluid, .navbar-expand-lg > .container-sm, .navbar-expand-lg > .container-md, .navbar-expand-lg > .container-lg, .navbar-expand-lg > .container-xl {
+        padding-right: 15px;
+        padding-left: 15px;
+    }
+}
+
+nav img {
+    width: 65px;
+}
+
+nav .nav-link {
+    font-size: 16px;
+    transition: all .3s;
+}
+nav .nav-link:hover {
+    color: #000 !important;
+}
+
+@media (max-width: 992px) {
+    nav .lang {
+        padding: 5px 10px;
+        font-size: 13px;
+        border-radius: 5px;
+        margin-right: 0px;
+        margin-top: 10px;
+    }
+    nav img {
+        width: 55px;
+    }
+    nav .lang .slide-toggle {
+        top: 30px;
+        padding: 10px 32px;
+    }
+
+    nav .last {
+        display: none;
+    }
+
+    nav .nav-link {
+        font-size: 15px;
+    }
+    
+}
+
+/* Start Footer */
+
+.footer {
+  margin-top: 110px;
+  background-color: #062C69;
+  padding: 40px 0 0 0;
+  color: white;
+}
+
+.footer p {
+  max-height: 290px;
+  overflow-y: hidden;
+}
+
+.footer h4 {
+  margin-bottom: 10px;
+}
+
+.footer li,
+.contact li {
+  line-height: 2;
+  font-size: 18px;
+}
+
+.footer li svg,
+.contact li svg {
+  margin-left: 5px;
+}
+
+.footer hr,
+.contact hr {
+  width: 50%;
+  height: 2px;
+  background-color: #EDC624;
+  margin-bottom: 14px;
+}
+
+.footer .center img,
+.contact .info img {
+  width: 32px;
+  margin-left: 5px;
+}
+
+.footer .left {
+  position: relative;
+}
+
+.footer .left .bg {
+  max-width: 80%;
+  margin-right: -45px;
+  margin-top: -38px;
+}
+
+.footer .left .app {
+  position: absolute;
+  right: 63px;
+  top: 45%;
+  width: 135px;
+}
+@media (max-width: 1200px) {
+  .footer .left .app {
+      position: absolute;
+      right: 40px;
+      top: 45%;
+      width: 100px;
+  }
+}
+
+@media (max-width: 992px) {
+  .footer .left .app {
+      right: 65px;
+  }
+  .footer .left .bg {
+      max-width: 300px;
+      margin-top: -45px;
+      max-height: 300px;
+  }
+}
+
+@media (max-width: 567px) {
+  .footer .left .app {
+      right: 70px;
+  }
+  .footer .left .bg {
+      margin-right: -35px;
+  }
+}
+
+.footer .copy {
+  background-color: #001840;
+  color: white;
+  padding: 5px 0;
+}
+
+/* End Footer */
