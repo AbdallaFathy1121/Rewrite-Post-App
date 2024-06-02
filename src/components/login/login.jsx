@@ -6,7 +6,7 @@ import "./styles/login.css";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import 'boxicons'
-import { CreateUser } from "./services/login.service.ts";
+import { createUser, getUserByEmail, assignUserIntoFreeSubscription } from "./services/login.service.ts";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,6 +17,17 @@ const Login = () => {
     onSuccess: (codeResponse) => setUser(codeResponse),
     onError: (error) => console.log("Login Failed:", error),
   });
+
+  const handleLoginUser = async(model) => {
+    const existUser = await getUserByEmail(model.email);
+    if (Object.keys(existUser).length === 0) {
+      await createUser(model);
+      // Assign User Into Free Subscription
+      await assignUserIntoFreeSubscription(model.id);
+    } else {
+      localStorage.setItem("email", model.email);
+    }
+  }
 
   useEffect(() => {
     if (user) {
@@ -32,13 +43,14 @@ const Login = () => {
         )
         .then(async (res) => {
           const model = {
+            id: res.data.id,
             email: res.data.email,
             name: res.data.name,
             picture: res.data.picture,
-            token: user.access_token,
             roleId: 1,
           }
-          await CreateUser(model);
+          // Login
+          await handleLoginUser(model);
           navigate('/');
         })
         .catch((err) => console.log(err));

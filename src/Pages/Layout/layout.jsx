@@ -3,7 +3,8 @@ import { Route, Routes, NavLink, Link } from "react-router-dom";
 import Post from "../../components/Post/post";
 import Subscriptions from "../../components/Subscriptions/subscriptions";
 import "./layout.style.css";
-import { getUserByToken } from "./services/layout.service.ts";
+import { getUserByEmail } from "./services/layout.service.ts";
+import { assignUserIntoFreeSubscription } from "../../components/Login/services/login.service.ts";
 import { useNavigate } from 'react-router-dom';
 
 
@@ -32,35 +33,36 @@ const Layout = () => {
   };
 
   const handleLogout  = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      localStorage.removeItem('token');
+    const email = localStorage.getItem("email");
+    if (email) {
+      localStorage.removeItem('email');
       navigate('/login');
     }
   }
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token == null) {
-      navigate('/login');
-    }
-  }, [navigate]);
 
-  useEffect(() => {
+    // Get User Data By Email
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const result = await getUserByToken(token);
-        setUserData(result);
+        const email = localStorage.getItem("email");
+        const result = await getUserByEmail(email);
+        if (result.email == null) {
+          navigate('/login');
+        } else {
+          setUserData(result);
+        }
       } catch (error) {}
     };
     fetchUser();
+    
+
 
     document.addEventListener("click", handleClickOutside);
     return () => {
       document.removeEventListener("click", handleClickOutside);
     };
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -141,23 +143,8 @@ const Layout = () => {
                 </NavLink>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="about.html">
-                  من نحن
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="contact.html">
-                  تواصل معنا
-                </a>
-              </li>
-              <li className="nav-item">
                 <a className="nav-link" href="account.html">
                   حسابى
-                </a>
-              </li>
-              <li className="nav-item">
-                <a className="nav-link" href="#">
-                  شرح الاستخدام
                 </a>
               </li>
               <li className="nav-item">
