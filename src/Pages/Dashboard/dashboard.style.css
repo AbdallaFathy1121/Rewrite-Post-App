@@ -1,0 +1,32 @@
+/* Start Tabs */
+
+.dashboard .tabs li {
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #7E7E7E;
+    padding: 15px 30px;
+    font-weight: 700;
+    background-color: #fff;
+    border-radius: 10px;
+    transition: all .1s;
+    list-style: none;
+    box-shadow: 0px 2px 2px #00000036;
+}
+
+a {
+    text-decoration: none;
+}
+
+.dashboard .tabs li:hover,
+.dashboard .tabs .active  {
+    color: #fff;
+    background-color: #062C69;
+}
+
+.dashboard .tabs li .icon {
+    margin-left: 10px;
+    position: relative;
+    bottom: -4px;
+}
+/* End Tabs */
