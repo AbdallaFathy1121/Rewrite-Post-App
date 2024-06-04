@@ -19,7 +19,10 @@ const App = () => {
       <Routes>
         <Route path='/login' element={<Login/>} />
       </Routes>
-      <Toaster />
+      <Toaster
+        position="top-left"
+        reverseOrder={false}
+      />
     </>
   );
 };

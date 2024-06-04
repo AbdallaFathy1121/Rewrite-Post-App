@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import 'boxicons'
-import { createUser, getUserByEmail, assignUserIntoFreeSubscription } from "./services/login.service.ts";
+import { createUser, getUserByEmail, assignUserIntoSubscription, updateUserSubscriptionIdById } from "./services/login.service.ts";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,8 +30,9 @@ const Login = () => {
     if (Object.keys(existUser).length === 0) {
       await createUser(model);
       // Assign User Into Free Subscription
-      await assignUserIntoFreeSubscription(model.id);
+      const result = await assignUserIntoSubscription(model.id);
       assignUserToFreeSubscriptionNotify();
+      updateUserSubscriptionIdById(result.UserId, result.Id);
     } else {
       localStorage.setItem("email", model.email);
       loginSuccssNotify();

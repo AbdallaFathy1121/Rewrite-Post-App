@@ -1,91 +1,152 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "boxicons";
-import "./styles/subscriptions.style.css"
+import "./styles/subscriptions.style.css";
+import { getAllSubscriptions } from "./services/subscription.service.ts";
+import Button from "react-bootstrap/Button";
+import Modal from "react-bootstrap/Modal";
+import { useNavigate } from "react-router-dom";
+import { getUserByEmail, assignUserIntoSubscription, updateUserSubscriptionIdById } from "../../components/Login/services/login.service.ts";
+import toast from 'react-hot-toast';
 
 const Subscriptions = () => {
+  const [subscriptions, setSubscriptions] = useState(null);
+  const [subscriptionId, setSubscriptionId] = useState(Number);
+  const [phoneNumber, setPhoneNumber] = useState(String);
+  const [show, setShow] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const navigate = useNavigate();
+
+  // Handle Model Popup
+  const handleClose = () => setShow(false);
+  const handleShow = (subscriptionId) => {
+    setShow(true);
+    setSubscriptionId(subscriptionId);
+  };
+
+  const addSubscriptionSuccssNotify = () => toast.success('تم الاشتراك فى الباقة برجاء الانتظار حتى يتم تفعيل الباقة من خلال الوتس اب',  {
+    duration: 6000,
+  });
+
+
+  // Add New Subscription
+  const handleAddSubscription = async () => {
+    const userId = userData.id;
+    const phone = phoneNumber;
+    const subId = subscriptionId;
+    const result = await assignUserIntoSubscription(userId, subId, phone);
+    updateUserSubscriptionIdById(userId, result.Id);
+    addSubscriptionSuccssNotify();
+    if (result) {
+      console.log("Done: ", result);
+      handleClose();
+    } else {
+      console.log(result);
+    }
+  };
+
+  const handlePhoneNumber = (e) => {
+    const phoneNumber = e.target.value;
+    setPhoneNumber(phoneNumber.toString());
+  }
+
+  // Format Price
+  const formatToDollar = (num) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(num);
+  };
+
+  useEffect(() => {
+    // Get User Data By Email
+    const fetchUser = async () => {
+      try {
+        const email = localStorage.getItem("email");
+        if (email == null) {
+          navigate("/login");
+        } else {
+          const result = await getUserByEmail(email);
+          if (result == null || !result.name) {
+            localStorage.removeItem("email");
+            navigate("/login");
+          } else {
+            setUserData(result);
+          }
+        }
+      } catch (error) {}
+    };
+    fetchUser();
+
+    // Get All Subscriptions
+    const setAllSubscriptions = async () => {
+      const result = await getAllSubscriptions();
+      setSubscriptions(result.data);
+    };
+    setAllSubscriptions();
+  }, [navigate]);
+
   return (
     <>
-    <div className="pricing">
-      <div class="row">
-        <div class="col-10 col-sm-10 col-md-6 col-lg-4 mx-auto">
-          <div class="table bg-light text-center">
-            <div class="wave"></div>
-            <h3>
-              Standard
-              <br />
-              $25 / Month
-            </h3>
-            <p class="mb-4">
-              1000GB Monthly Bandwidth
-              <br />
-              100 Google Adwords
-              <br />
-              SSL Shopping Cart
-              <br />
-              24/7 Live Support
-            </p>
-            <button
-              class="button text-uppercase mt-2"
-              type="button"
-            >
-              Purchase Now
-            </button>
-          </div>
-        </div>
-
-        <div class="col-10 col-sm-10 col-md-6 col-lg-4 mx-auto">
-          <div class="table bg-light text-center">
-            <div class="wave"></div>
-            <h3>
-              Professional
-              <br />
-              $125 / Month
-            </h3>
-            <p class="mb-4">
-              1000GB Monthly Bandwidth
-              <br />
-              100 Google Adwords
-              <br />
-              SSL Shopping Cart
-              <br />
-              24/7 Live Support
-            </p>
-            <button
-              class="button text-uppercase mt-2"
-              type="button"
-            >
-              Purchase Now
-            </button>
-          </div>
-        </div>
-
-        <div class="col-10 col-sm-10 col-md-6 col-lg-4 mx-auto">
-          <div class="table bg-light text-center">
-            <div class="wave"></div>
-            <h3>
-              Business
-              <br />
-              $255 / Month
-            </h3>
-            <p class="mb-4">
-              1000GB Monthly Bandwidth
-              <br />
-              100 Google Adwords
-              <br />
-              SSL Shopping Cart
-              <br />
-              24/7 Live Support
-            </p>
-            <button
-              class="button text-uppercase mt-2"
-              type="button"
-            >
-              Purchase Now
-            </button>
-          </div>
+      <div className="pricing">
+        <div className="row">
+          {subscriptions ? (
+            <>
+              {subscriptions.map((item, index) => (
+                <>
+                  {item.Id != 1 && (
+                    <div className="col-10 col-sm-10 col-md-6 col-lg-4 mx-auto">
+                      <div className="table bg-light text-center">
+                        <div className="wave"></div>
+                        <h3>الاشتراك {item.Name}</h3>
+                        <p className="mb-4">
+                          <br />
+                          {item.Days} يوم
+                          <br />
+                          عدد مرات تنفيذ الخدمة {item.PostCredits}
+                          <br />
+                          سعر الاشتراك {formatToDollar(item.Price)}
+                        </p>
+                        <button
+                          className="button text-uppercase mt-2"
+                          type="button"
+                          onClick={() => handleShow(item.Id)}
+                        >
+                          أشترك الان
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              ))}
+            </>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
-    </div>
+
+      <Modal show={show} onHide={handleClose} centered>
+        <Modal.Header>
+          <Modal.Title>تأكيد الاشتراك</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <input
+              className="form-control"
+              id="phone"
+              type="number"
+              placeholder="ادخل رقم الهاتف"
+              onKeyUp={handlePhoneNumber} 
+            />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            الغاء
+          </Button>
+          <Button variant="primary" onClick={() => handleAddSubscription()}>
+            تأكيد
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
