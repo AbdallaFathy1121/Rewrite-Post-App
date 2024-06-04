@@ -5,6 +5,7 @@ import {BrowserRouter as Router , Route , Routes, useLocation  } from 'react-rou
 import Login from './components/Login/login.jsx';
 import Layout from './Pages/Layout/layout.jsx';
 import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/authContext';
 
 
 const App = () => {
@@ -14,7 +15,7 @@ const App = () => {
   const isLoginPage = location.pathname === '/login';
 
   return (
-    <>
+    <AuthProvider>
       {!isLoginPage && <Layout />}
       <Routes>
         <Route path='/login' element={<Login/>} />
@@ -23,7 +24,7 @@ const App = () => {
         position="top-left"
         reverseOrder={false}
       />
-    </>
+    </AuthProvider>
   );
 };
 
