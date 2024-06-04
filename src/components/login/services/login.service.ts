@@ -2,11 +2,12 @@ import axios from 'axios';
 import config from '../../../config';
 import User from '../models/User';
 import UserResponse from '../models/UserResponse';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // Create User
 export const createUser = async (model: User) => {
   try {
-    const response = await axios.post(`${config.apiUrl}/user/add`, model);
+    const response = await axiosInstance.post(`/user/add`, model);
     const result: UserResponse = response.data;
     localStorage.setItem("email", result.data.email);
   } catch (error) {
@@ -14,11 +15,26 @@ export const createUser = async (model: User) => {
   }
 }
 
+// Login User by Email
+export const auth = async (email: string) => {
+  const model = {
+    email: email
+  }
+  try {
+    const response = await axiosInstance.post(`/user/login`, model);
+    return response.data;
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+
 // Get User By Email
 export const getUserByEmail = async (email: string) => {
   try {
-    const response = await axios.get(`${config.apiUrl}/user/${email}`);
+    const response = await axiosInstance.get(`/user/${email}`);
     const result = response.data;
+    console.log(result);
     return result.data;
   } catch (error) {
     console.error('Error:', error);
@@ -34,7 +50,7 @@ export const assignUserIntoSubscription = async (userId: string, subscriptionId 
       "subscriptionId": subscriptionId,
       "phoneNumber": phoneNumber
     }
-    const response = await axios.post(`${config.apiUrl}/subscription/assignUserIntoSubscription`, body);
+    const response = await axiosInstance.post(`/subscription/assignUserIntoSubscription`, body);
     const result = response.data;
     console.log(result.data[0]);
     return result.data[0];
@@ -50,7 +66,7 @@ export const updateUserSubscriptionIdById = async (userId: string, userSubscript
       "id": userId,
       "userSubscriptionId": userSubscriptionId
     }
-    const response = await axios.post(`${config.apiUrl}/user/update`, body);
+    const response = await axiosInstance.post(`/user/update`, body);
     const result = response.data;
     return result;
   } catch (error) {

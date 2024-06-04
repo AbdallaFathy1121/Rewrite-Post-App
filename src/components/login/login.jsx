@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../../context/authContext.js';
 
 import "./styles/login.css";
 import toast from 'react-hot-toast';
@@ -7,25 +8,29 @@ import toast from 'react-hot-toast';
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import 'boxicons'
-import { createUser, getUserByEmail, assignUserIntoSubscription, updateUserSubscriptionIdById } from "./services/login.service.ts";
+import { createUser, getUserByEmail, assignUserIntoSubscription, updateUserSubscriptionIdById, auth } from "./services/login.service.ts";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const [user, setUser] = useState(null);
 
+  // Notify
   const assignUserToFreeSubscriptionNotify = () => toast.success(" تم التسجيل بنجاح والاشتراك فى الباقة المجانية بنجاح",  {
     duration: 6000,
   });
-
   const loginSuccssNotify = () => toast.success(" تم التسجيل بنجاح");
 
-  const login = useGoogleLogin({
+  const googleLogin = useGoogleLogin({
     onSuccess: (codeResponse) => setUser(codeResponse),
     onError: (error) => console.log("Login Failed:", error),
   });
 
   const handleLoginUser = async(model) => {
+    const result = await auth(model.email);
+    login(result.token, result.expiresAt);
+    
     const existUser = await getUserByEmail(model.email);
     if (Object.keys(existUser).length === 0) {
       await createUser(model);
@@ -88,7 +93,7 @@ const Login = () => {
           </form>
 
           <div className="or"></div>
-          <button className="login-with-google d-flex justify-content-around align-items-center" onClick={() => login()}>
+          <button className="login-with-google d-flex justify-content-around align-items-center" onClick={() => googleLogin()}>
             تسجيل الدخول عبر جوجل
             <span className="icon">
               <box-icon type='logo' name='google-plus'></box-icon>
