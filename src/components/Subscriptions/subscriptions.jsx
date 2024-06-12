@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import "boxicons";
 import "./styles/subscriptions.style.css";
 import { getAllSubscriptions } from "./services/subscription.service.ts";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import { useNavigate } from "react-router-dom";
-import { getUserByEmail, assignUserIntoSubscription, updateUserSubscriptionIdById } from "../../components/Login/services/login.service.ts";
+import { assignUserIntoSubscription, updateUserSubscriptionIdById } from "../../components/Login/services/login.service.ts";
 import toast from 'react-hot-toast';
+import { jwtDecode } from 'jwt-decode';
+import AuthContext from "../../context/authContext";
 
 const Subscriptions = () => {
   const [subscriptions, setSubscriptions] = useState(null);
@@ -15,6 +17,7 @@ const Subscriptions = () => {
   const [show, setShow] = useState(false);
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext)
 
   // Handle Model Popup
   const handleClose = () => setShow(false);
@@ -61,17 +64,11 @@ const Subscriptions = () => {
     // Get User Data By Email
     const fetchUser = async () => {
       try {
-        const email = localStorage.getItem("email");
-        if (email == null) {
-          navigate("/login");
+        const userData = jwtDecode(localStorage.getItem('token'));
+        if (userData.email == null) {
+          logout();
         } else {
-          const result = await getUserByEmail(email);
-          if (result == null || !result.name) {
-            localStorage.removeItem("email");
-            navigate("/login");
-          } else {
-            setUserData(result);
-          }
+          setUserData(userData);
         }
       } catch (error) {}
     };

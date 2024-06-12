@@ -1,10 +1,9 @@
-import axios from 'axios';
-import config from '../../../config';
+import axiosInstance from '../../../utils/axiosInstance'
 
 // Get All Subscriptions
-export const getAllSubscriptions = async () => {
+export const getAllUsers = async () => {
     try {
-      const response = await axios.get(`${config.apiUrl}/user/all`);
+      const response = await axiosInstance.get('/user/all');
       const result = response.data;
       return result;
     } catch (error) {

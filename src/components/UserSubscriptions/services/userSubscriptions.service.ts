@@ -1,10 +1,9 @@
-import axios from 'axios';
-import config from '../../../config';
+import axiosInstance from '../../../utils/axiosInstance';
 
 // Get All Subscriptions
 export const getAllUserSubscriptions = async () => {
     try {
-      const response = await axios.get(`${config.apiUrl}/subscription/allUserSubscriptions`);
+      const response = await axiosInstance.get(`/subscription/allUserSubscriptions`);
       const result = response.data;
       return result;
     } catch (error) {
@@ -14,7 +13,7 @@ export const getAllUserSubscriptions = async () => {
   }
 
   // Get All Subscriptions
-export const updateUserSubscriptionById = async (id, status, days) => {
+export const updateUserSubscriptionById = async (id: any, status: any, days: any) => {
   try {
     const body = {
       "id": id,
@@ -22,7 +21,7 @@ export const updateUserSubscriptionById = async (id, status, days) => {
       "days": days
     };
 
-    const response = await axios.post(`${config.apiUrl}/subscription/update`, body);
+    const response = await axiosInstance.post(`/subscription/update`, body);
     const result = response.data;
     return result;
   } catch (error) {

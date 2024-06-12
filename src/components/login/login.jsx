@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from 'react-router-dom';
 import AuthContext from '../../context/authContext.js';
 
 import "./styles/login.css";
@@ -11,7 +10,6 @@ import 'boxicons'
 import { createUser, getUserByEmail, assignUserIntoSubscription, updateUserSubscriptionIdById, auth } from "./services/login.service.ts";
 
 const Login = () => {
-  const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const [user, setUser] = useState(null);
@@ -37,9 +35,8 @@ const Login = () => {
       // Assign User Into Free Subscription
       const result = await assignUserIntoSubscription(model.id);
       assignUserToFreeSubscriptionNotify();
-      updateUserSubscriptionIdById(result.UserId, result.Id);
+      await updateUserSubscriptionIdById(result.UserId, result.Id);
     } else {
-      localStorage.setItem("email", model.email);
       loginSuccssNotify();
     }
   }
@@ -66,11 +63,18 @@ const Login = () => {
           }
           // Login
           await handleLoginUser(model);
-          navigate('/');
         })
         .catch((err) => console.log(err));
     }
   }, [user]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const tokenExpiry = localStorage.getItem('tokenExpiry');
+    if (token) {
+      login(token, tokenExpiry);
+    }
+  }, [])
 
   return (
     <>

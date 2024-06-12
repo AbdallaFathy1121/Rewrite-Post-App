@@ -1,34 +1,33 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Route, Routes, NavLink } from "react-router-dom";
-import { getUserByEmail } from "../../components/Login/services/login.service.ts";
 import { useNavigate } from "react-router-dom";
 import Roles from "../../Shared/roles.js";
 import "./dashboard.style.css";
 import "boxicons";
 import Users from "../../components/Users/users.jsx";
 import UserSubscriptions from "../../components/UserSubscriptions/userSubscriptions.jsx";
+import { jwtDecode } from 'jwt-decode';
+import AuthContext from "../../context/authContext.js";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { logout } = useContext(AuthContext)
+
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     // Get User Data By Email
     const fetchUser = async () => {
       try {
-        const email = localStorage.getItem("email");
-        if (email == null) {
-          navigate("/login");
+        const userData = jwtDecode(localStorage.getItem('token'));
+        if (userData.email == null) {
+          logout();
         } else {
-          const result = await getUserByEmail(email);
-          if (result == null || !result.name) {
-            localStorage.removeItem("email");
-            navigate("/login");
-          } else if (
-            result.roleName == Roles.Admin ||
-            result.roleName == Roles.Subscriper
+          if (
+            userData.roleName == Roles.Admin ||
+            userData.roleName == Roles.Subscriper
           ) {
-            setUserData(result);
+            setUserData(userData);
           } else {
             navigate("/");
           }
@@ -36,7 +35,7 @@ const Dashboard = () => {
       } catch (error) {}
     };
     fetchUser();
-  }, [navigate]);
+  }, []);
 
   return (
     <>

@@ -1,5 +1,3 @@
-import axios from 'axios';
-import config from '../../../config';
 import User from '../models/User';
 import UserResponse from '../models/UserResponse';
 import axiosInstance from '../../../utils/axiosInstance';
@@ -9,7 +7,7 @@ export const createUser = async (model: User) => {
   try {
     const response = await axiosInstance.post(`/user/add`, model);
     const result: UserResponse = response.data;
-    localStorage.setItem("email", result.data.email);
+    return result;
   } catch (error) {
     console.error('Error:', error);
   }
@@ -34,7 +32,6 @@ export const getUserByEmail = async (email: string) => {
   try {
     const response = await axiosInstance.get(`/user/${email}`);
     const result = response.data;
-    console.log(result);
     return result.data;
   } catch (error) {
     console.error('Error:', error);
@@ -52,7 +49,6 @@ export const assignUserIntoSubscription = async (userId: string, subscriptionId 
     }
     const response = await axiosInstance.post(`/subscription/assignUserIntoSubscription`, body);
     const result = response.data;
-    console.log(result.data[0]);
     return result.data[0];
   } catch (error) {
     console.error('Error:', error);
@@ -60,7 +56,7 @@ export const assignUserIntoSubscription = async (userId: string, subscriptionId 
 }
 
 // Assign User Into Free Subscription
-export const updateUserSubscriptionIdById = async (userId: string, userSubscriptionId) => {
+export const updateUserSubscriptionIdById = async (userId: string, userSubscriptionId: number) => {
   try {
     const body = {
       "id": userId,

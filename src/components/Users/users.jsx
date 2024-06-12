@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { getAllSubscriptions } from "./services/users.service.ts";
+import { getAllUsers } from "./services/users.service.ts";
 import "./styles/users.style.css";
 
 const Users = () => {
-  const [users, setUsers] = useState(null);
+  const [users, setUsers] = useState([]);
 
   const handleGetUsers = async () => {
-    const result = await getAllSubscriptions();
-    setUsers(result.data);
+    const result = await getAllUsers();
+    if (result.data != null) {
+      setUsers(result.data);
+    }
+    console.log(result);
   };
 
   useEffect(() => {

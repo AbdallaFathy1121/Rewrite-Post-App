@@ -1,34 +1,29 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Route, Routes, NavLink, BrowserRouter as Router } from "react-router-dom";
+import React, { useEffect, useState, useContext } from "react";
+import { Route, Routes } from "react-router-dom";
 import Post from "../../components/Post/post";
 import Subscriptions from "../../components/Subscriptions/subscriptions";
 import "./layout.style.css";
-import { getUserByEmail } from "../../components/Login/services/login.service.ts";
-import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 import Dashboard from "../Dashboard/dashboard.jsx";
 import NavBar from "../../Shared/components/navbar.jsx";
 import Footer from "../../Shared/components/footer.jsx";
+import AuthContext from "../../context/authContext";
+import PrivateRoute from "../../Shared/components/PrivateRoute";
 
 const Layout = () => {
-  const [userData, setUserData] = useState(null);
-  const navigate = useNavigate();
+  const [userData, setUserData] = useState();
+  const { logout } = useContext(AuthContext)
 
   useEffect(() => {
     // Get User Data By Email
     const fetchUser = async () => {
       try {
-        const email = localStorage.getItem("email");
-        if (email == null) {
-          navigate('/login');
+        const userData = jwtDecode(localStorage.getItem('token'));
+        if (userData.email == null) {
+          logout();
         } else {
-          const result = await getUserByEmail(email);
-          if (result == null || !result.name) {
-            localStorage.removeItem("email");
-            navigate('/login');
-          } else {
-            setUserData(result);
-          }
+          setUserData(userData);
         }
       } catch (error) {}
     };
@@ -42,9 +37,9 @@ const Layout = () => {
 
       <div className="container mt-5 mb-5">
         <Routes>
-          <Route exact path="/" element={<Post />} />
-          <Route path="/subscriptions" element={<Subscriptions />} />
-          <Route path="/dashboard/*" element={<Dashboard />} />
+          <Route exact path="/" element={<PrivateRoute><Post /></PrivateRoute>} />
+          <Route path="/subscriptions" element={<PrivateRoute><Subscriptions /></PrivateRoute>} />
+          <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         </Routes>
       </div>
 

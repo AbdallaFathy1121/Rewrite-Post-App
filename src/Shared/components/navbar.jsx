@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import {
   NavLink,
   useNavigate,
 } from "react-router-dom";
 import "boxicons";
 import { Navbar } from "react-bootstrap";
-import toast from "react-hot-toast";
 import Roles from "../roles";
-
+import AuthContext from '../../context/authContext';
 
 const NavBar = ({ userData }) => {
+  const { logout } = useContext(AuthContext);
   const [isOpen, setIsOpen] = useState(false);
   const [isNavFixed, setIsNavFixed] = useState(false);
   const dropdownRef = useRef(null);
@@ -48,16 +48,6 @@ const NavBar = ({ userData }) => {
     };
   }, []);
 
-  const handleLogout = () => {
-    const email = localStorage.getItem("email");
-    if (email) {
-      localStorage.removeItem("email");
-      navigate("/login");
-      logoutSuccssNotify();
-    }
-  };
-  const logoutSuccssNotify = () => toast.success(" تم تسجيل الخروج بنجاح");
-
   return (
     <>
       <nav
@@ -87,7 +77,7 @@ const NavBar = ({ userData }) => {
                       </li>
                       <li className="divider"></li>
                       <li>
-                        <button onClick={() => handleLogout()}>
+                        <button  onClick={logout}>
                           <span className="material-symbols-outlined">
                             تسجيل خروج
                           </span>
