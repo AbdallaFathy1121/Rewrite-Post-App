@@ -55,7 +55,7 @@ export const assignUserIntoSubscription = async (userId: string, subscriptionId 
   }
 }
 
-// Assign User Into Free Subscription
+// update User SubscriptionId By Id
 export const updateUserSubscriptionIdById = async (userId: string, userSubscriptionId: number) => {
   try {
     const body = {

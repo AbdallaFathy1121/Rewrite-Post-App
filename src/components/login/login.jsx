@@ -26,17 +26,28 @@ const Login = () => {
   });
 
   const handleLoginUser = async(model) => {
-    const result = await auth(model.email);
-    login(result.token, result.expiresAt);
-    
     const existUser = await getUserByEmail(model.email);
     if (Object.keys(existUser).length === 0) {
+
+      // Create User
       await createUser(model);
+      
       // Assign User Into Free Subscription
       const result = await assignUserIntoSubscription(model.id);
+      await updateUserSubscriptionIdById(model.id, result.Id);
+      
+      // Login
+      const user = await auth(model.email);
+      login(user.token, user.expiresAt);
+
+      // Notify
+      loginSuccssNotify();
       assignUserToFreeSubscriptionNotify();
-      await updateUserSubscriptionIdById(result.UserId, result.Id);
+      
     } else {
+      // Login
+      const user = await auth(model.email);
+      login(user.token, user.expiresAt);
       loginSuccssNotify();
     }
   }
