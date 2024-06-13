@@ -12,17 +12,18 @@ export const getAllUserSubscriptions = async () => {
     }
   }
 
-  // Get All Subscriptions
-export const updateUserSubscriptionById = async (id: any, status: any, days: any) => {
+// Update User Subscription By Id 
+export const updateUserSubscriptionById = async (id: number, status: string, days: number) => {
   try {
     const body = {
       "id": id,
       "status": status,
       "days": days
     };
-
+    console.log(body);
     const response = await axiosInstance.post(`/subscription/update`, body);
     const result = response.data;
+    console.log(response);
     return result;
   } catch (error) {
     console.error('Error:', error);

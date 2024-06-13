@@ -2,14 +2,29 @@ import React, { useState, useEffect, useCallback } from "react";
 import { getAllUserSubscriptions, updateUserSubscriptionById } from "./services/userSubscriptions.service.ts";
 import "./styles/userSubscriptions.style.css";
 import toast from 'react-hot-toast';
-
+import UserStatus from "../../Shared/status.js";
+import { jwtDecode } from 'jwt-decode';
+import {updateUserSubscriptionIdById} from "../Login/services/login.service.ts"
 
 const UserSubscriptions = () => {
   const [userSubscriptions, setUserSubscriptions] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const allStatus = [UserStatus.Pendding, UserStatus.Accepted, UserStatus.Rejected, UserStatus.Expired];
 
   const handleGetUserSubscriptions = async () => {
     const result = await getAllUserSubscriptions();
     setUserSubscriptions(result.data);
+  };
+
+  const handleSelectChange = async (event) => {
+    const value = event.target.value;
+    const selectedIndex = event.target.selectedIndex;
+    const itemId = event.target.options[selectedIndex].getAttribute('data-item-id');
+    const days = event.target.options[selectedIndex].getAttribute('data-item-days');
+    await updateUserSubscription(itemId, value, days);
+    if (value == UserStatus.Accepted) {
+      await updateUserSubscriptionIdById(userId, itemId);
+    }
   };
 
   const changeStatusSuccssNotify = () => toast.success("تم تغيير حالة الاشتراك بنجاح");
@@ -29,6 +44,11 @@ const UserSubscriptions = () => {
   };
 
   useEffect(() => {
+    const userData = jwtDecode(localStorage.getItem('token'));
+    setUserId(userData.id);
+  }, []);
+
+  useEffect(() => {
     handleGetUserSubscriptions();
   }, [updateUserSubscription]);
 
@@ -44,11 +64,12 @@ const UserSubscriptions = () => {
                   <th scope="col">الصورة</th>
                   <th scope="col">الاسم</th>
                   <th scope="col">الاشتراك</th>
+                  <th scope="col">رقم الهاتف</th>
                   <th scope="col">سعر الاشتراك</th>
                   <th scope="col">عدد مرات الخدمة</th>
                   <th scope="col">عدد استهلاك الخدمة</th>
                   <th scope="col">حالة الاشتراك</th>
-                  <th scope="col">التفاعل</th>
+                  <th scope="col">تغيير حالة الاشتراك</th>
                 </tr>
               </thead>
               <tbody>
@@ -72,24 +93,19 @@ const UserSubscriptions = () => {
                         )}
                         <td>{item.UserName}</td>
                         <td>{item.SubscriptionName}</td>
+                        <td>{item.PhoneNumber}</td>
                         <td>{formatToDollar(item.Price)}</td>
                         <td>{item.PostCredits}</td>
                         <td>{item.PostCreditsRemaining}</td>
-                        {item.Status == true ? (
-                          <>
-                            <td className="active_status">مفعل</td>
-                            <td>
-                              <button className="btn btn-danger" onClick={() => updateUserSubscription(item.Id, 0, item.Days)}>الغاء التفعيل</button>
-                            </td>
-                          </>
-                        ) : (
-                          <>
-                            <td className="de_active_status">غير مفعل</td>
-                            <td>
-                              <button className="btn btn-success" onClick={() => updateUserSubscription(item.Id, 1, item.Days)}>تفعيل</button>
-                            </td>
-                          </>
-                        )}
+                        <td className="active_status">{item.Status}</td>
+                        <td>
+                        <select class="form-select" onChange={handleSelectChange}>
+                          <option selected data-item-id={item.Id} data-item-days={item.Days} value={item.Status}>{item.Status}</option>
+                          {allStatus.map(status => (
+                            status != item.Status && <option data-item-id={item.Id} data-item-days={item.Days} value={status}>{status}</option>
+                          ))}
+                        </select>
+                        </td>
                       </tr>
                     ))}
                   </>
