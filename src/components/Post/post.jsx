@@ -7,6 +7,8 @@ import "boxicons";
 import UserStatus from "../../Shared/status.js";
 import { getUserByEmail } from "../Login/services/login.service.ts"
 import AuthContext from "../../context/authContext";
+import {updateUserSubscriptionById} from "../UserSubscriptions/services/userSubscriptions.service.ts"
+
 
 const Post = () => {
   const [textAreaValue, setTextAreaValue] = useState('');
@@ -31,6 +33,7 @@ const Post = () => {
           // Get User Subscription By Id
           const response = await getUserSubscriptionById(userData.userSubscriptionId);
           setUserSubscription(response.data);
+          console.log(response.data);
         }
         fetchData();
       }
@@ -72,6 +75,9 @@ const Post = () => {
       }
       const respone = await createPost(model);
       if (respone.isSuccess) {
+        if (userSubscription.postCredits <= 1) {
+          await updateUserSubscriptionById(userSubscription.id, UserStatus.Expired, userSubscription.days)
+        }
         const newPostCredits = userSubscription.postCredits - 1;
         const result = await changePostCreditsUserSubscriptionById(userSubscription.id, newPostCredits);
         if (result == true) {
@@ -109,7 +115,7 @@ const Post = () => {
                     {userSubscription.postCredits > 0 ? (
                       <div className="credits">
                         لديك عدد 
-                        <span> {userSubscription.postCredits}</span> 
+                        <span> {userSubscription.postCredits} </span> 
                         مرات لاستخدام الخدمة  
                       </div>
                     ): (
