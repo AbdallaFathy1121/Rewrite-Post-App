@@ -1,0 +1,9 @@
+.status {
+    color: #062C69 !important;
+    font-weight: bold;
+}
+
+td span {
+    color: green;
+    font-weight: bold;
+}
