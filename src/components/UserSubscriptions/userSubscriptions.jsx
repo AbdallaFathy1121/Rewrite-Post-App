@@ -1,15 +1,18 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useContext } from "react";
 import { getAllUserSubscriptions, updateUserSubscriptionById } from "./services/userSubscriptions.service.ts";
 import "./styles/userSubscriptions.style.css";
 import toast from 'react-hot-toast';
 import UserStatus from "../../Shared/status.js";
-import { jwtDecode } from 'jwt-decode';
-import {updateUserSubscriptionIdById} from "../Login/services/login.service.ts"
+import {updateUserSubscriptionIdById, getUserByEmail} from "../Login/services/login.service.ts"
+import AuthContext from "../../context/authContext";
+import { getUserSubscriptionById } from "../Post/services/post.service.ts"
+
 
 const UserSubscriptions = () => {
   const [userSubscriptions, setUserSubscriptions] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const { logout } = useContext(AuthContext);
   const allStatus = [UserStatus.Pendding, UserStatus.Accepted, UserStatus.Rejected, UserStatus.Expired];
+  const changeStatusSuccssNotify = () => toast.success("تم تغيير حالة الاشتراك بنجاح");
 
   const handleGetUserSubscriptions = async () => {
     const result = await getAllUserSubscriptions();
@@ -21,18 +24,34 @@ const UserSubscriptions = () => {
     const selectedIndex = event.target.selectedIndex;
     const itemId = event.target.options[selectedIndex].getAttribute('data-item-id');
     const days = event.target.options[selectedIndex].getAttribute('data-item-days');
+    const userId = event.target.options[selectedIndex].getAttribute('data-user-id');
+    const email = event.target.options[selectedIndex].getAttribute('data-email');
+
+    handleExpiredOlUserSubscription(email, itemId, value);
+
     await updateUserSubscription(itemId, value, days);
     if (value == UserStatus.Accepted) {
       await updateUserSubscriptionIdById(userId, itemId);
     }
+    changeStatusSuccssNotify();
   };
 
-  const changeStatusSuccssNotify = () => toast.success("تم تغيير حالة الاشتراك بنجاح");
+
+  const handleExpiredOlUserSubscription = async (email, userSubscriptionId, status) => {
+    const result = await getUserByEmail(email);
+    const userSubId = result.userSubscriptionId;
+    if (userSubId != userSubscriptionId && status == UserStatus.Accepted) {
+      const expired = UserStatus.Expired;
+      const userSubscription = await getUserSubscriptionById(userSubId);
+      await updateUserSubscription(userSubId, expired, userSubscription.data.days);
+    }
+  }
+
 
   // Update Status of UserSubscription
   const updateUserSubscription = useCallback(async(id, status, days) => {
     const result = await updateUserSubscriptionById(id, status, days);
-    changeStatusSuccssNotify();
+    await handleGetUserSubscriptions();
   })
 
   // Format Price
@@ -44,13 +63,12 @@ const UserSubscriptions = () => {
   };
 
   useEffect(() => {
-    const userData = jwtDecode(localStorage.getItem('token'));
-    setUserId(userData.id);
-  }, []);
-
-  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token || typeof token !== 'string') { 
+      logout();
+    }
     handleGetUserSubscriptions();
-  }, [updateUserSubscription]);
+  }, []);
 
   return (
     <>
@@ -100,9 +118,9 @@ const UserSubscriptions = () => {
                         <td className="active_status">{item.Status}</td>
                         <td>
                         <select class="form-select" onChange={handleSelectChange}>
-                          <option selected data-item-id={item.Id} data-item-days={item.Days} value={item.Status}>{item.Status}</option>
+                          <option selected data-email={item.Email} data-user-id={item.UserId} data-item-id={item.Id} data-item-days={item.Days} value={item.Status}>{item.Status}</option>
                           {allStatus.map(status => (
-                            status != item.Status && <option data-item-id={item.Id} data-item-days={item.Days} value={status}>{status}</option>
+                            status != item.Status && <option data-email={item.Email} data-user-id={item.UserId} data-item-id={item.Id} data-item-days={item.Days} value={status}>{status}</option>
                           ))}
                         </select>
                         </td>

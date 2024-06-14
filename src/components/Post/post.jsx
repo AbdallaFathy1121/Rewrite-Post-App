@@ -1,29 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { createPost, getUserSubscriptionById, changePostCreditsUserSubscriptionById } from "./services/post.service.ts";
 import { jwtDecode } from 'jwt-decode';
 import toast from 'react-hot-toast';
 import "./styles/post.style.css"
 import "boxicons";
 import UserStatus from "../../Shared/status.js";
+import { getUserByEmail } from "../Login/services/login.service.ts"
+import AuthContext from "../../context/authContext";
 
 const Post = () => {
-
   const [textAreaValue, setTextAreaValue] = useState('');
   const [user, setUser] = useState(null);
   const [userSubscription, setUserSubscription] = useState(null);
   const [isDisabled, setIsDisabled] = useState(true);
   const [rewrittenContent, setRewrittenContent] = useState('');
 
+  const { logout } = useContext(AuthContext)
+
   useEffect(() => {
-    const userData = jwtDecode(localStorage.getItem('token'));
-    if (userData.id != null) {
-      setUser(userData);
-      // Get User Subscription By Id
-      const fetchData = async () => {
-        const response = await getUserSubscriptionById(userData.userSubscriptionId);
-        setUserSubscription(response.data);
+    const token = localStorage.getItem('token');
+    if (!token || typeof token !== 'string') {
+      logout();
+    } else {
+      const decodedToken = jwtDecode(localStorage.getItem('token'));
+      if (decodedToken.email != null) {
+        const fetchData = async () => {
+          // Get User By Email
+          const userData = await getUserByEmail(decodedToken.email);
+          setUser(userData);
+          // Get User Subscription By Id
+          const response = await getUserSubscriptionById(userData.userSubscriptionId);
+          setUserSubscription(response.data);
+        }
+        fetchData();
       }
-      fetchData();
     }
   }, []);
 
