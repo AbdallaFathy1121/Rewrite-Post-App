@@ -16,25 +16,30 @@ const Dashboard = () => {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    // Get User Data By Email
-    const fetchUser = async () => {
-      try {
-        const userData = jwtDecode(localStorage.getItem('token'));
-        if (userData.email == null) {
-          logout();
-        } else {
-          if (
-            userData.roleName == Roles.Admin ||
-            userData.roleName == Roles.Subscriper
-          ) {
-            setUserData(userData);
+    const token = localStorage.getItem('token');
+    if (!token || typeof token !== 'string') {
+      logout();
+    } else {
+      // Get User Data By Email
+      const fetchUser = async () => {
+        try {
+          const userData = jwtDecode(localStorage.getItem('token'));
+          if (userData.email == null) {
+            logout();
           } else {
-            navigate("/");
+            if (
+              userData.roleName == Roles.Admin ||
+              userData.roleName == Roles.Subscriper
+            ) {
+              setUserData(userData);
+            } else {
+              navigate("/");
+            }
           }
-        }
-      } catch (error) {}
-    };
-    fetchUser();
+        } catch (error) {}
+      };
+      fetchUser();
+    }
   }, []);
 
   return (

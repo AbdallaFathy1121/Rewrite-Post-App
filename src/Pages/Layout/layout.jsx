@@ -10,6 +10,7 @@ import NavBar from "../../Shared/components/navbar.jsx";
 import Footer from "../../Shared/components/footer.jsx";
 import AuthContext from "../../context/authContext";
 import PrivateRoute from "../../Shared/components/PrivateRoute";
+import Account from "../../components/Account/account";
 
 const Layout = () => {
   const [userData, setUserData] = useState();
@@ -19,11 +20,15 @@ const Layout = () => {
     // Get User Data By Email
     const fetchUser = async () => {
       try {
-        const userData = jwtDecode(localStorage.getItem('token'));
-        if (userData.email == null) {
-          logout();
+        if (localStorage.getItem('token')) {
+          const userData = jwtDecode(localStorage.getItem('token'));
+          if (userData.email == null) {
+            logout();
+          } else {
+            setUserData(userData);
+          }
         } else {
-          setUserData(userData);
+          logout();
         }
       } catch (error) {}
     };
@@ -39,6 +44,7 @@ const Layout = () => {
         <Routes>
           <Route exact path="/" element={<PrivateRoute><Post /></PrivateRoute>} />
           <Route path="/subscriptions" element={<PrivateRoute><Subscriptions /></PrivateRoute>} />
+          <Route path="/account" element={<PrivateRoute><Account /></PrivateRoute>} />
           <Route path="/dashboard/*" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         </Routes>
       </div>

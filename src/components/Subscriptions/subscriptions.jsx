@@ -61,26 +61,31 @@ const Subscriptions = () => {
   };
 
   useEffect(() => {
-    // Get User Data By Email
-    const fetchUser = async () => {
-      try {
-        const userData = jwtDecode(localStorage.getItem('token'));
-        if (userData.email == null) {
-          logout();
-        } else {
-          setUserData(userData);
-        }
-      } catch (error) {}
-    };
-    fetchUser();
-
-    // Get All Subscriptions
-    const setAllSubscriptions = async () => {
-      const result = await getAllSubscriptions();
-      setSubscriptions(result.data);
-    };
-    setAllSubscriptions();
-  }, [navigate]);
+    const token = localStorage.getItem('token');
+    if (!token || typeof token !== 'string') {
+      logout();
+    } else {
+      // Get User Data By Email
+      const fetchUser = async () => {
+        try {
+          const userData = jwtDecode(localStorage.getItem('token'));
+          if (userData.email == null) {
+            logout();
+          } else {
+            setUserData(userData);
+          }
+        } catch (error) {}
+      };
+      fetchUser();
+  
+      // Get All Subscriptions
+      const setAllSubscriptions = async () => {
+        const result = await getAllSubscriptions();
+        setSubscriptions(result.data);
+      };
+      setAllSubscriptions();
+    }
+  }, []);
 
   return (
     <>

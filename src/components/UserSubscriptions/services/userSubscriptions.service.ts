@@ -20,10 +20,8 @@ export const updateUserSubscriptionById = async (id: number, status: string, day
       "status": status,
       "days": days
     };
-    console.log(body);
     const response = await axiosInstance.post(`/subscription/update`, body);
     const result = response.data;
-    console.log(response);
     return result;
   } catch (error) {
     console.error('Error:', error);

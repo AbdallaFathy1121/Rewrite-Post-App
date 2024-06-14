@@ -6,7 +6,7 @@ import Login from './components/Login/login.jsx';
 import Layout from './Pages/Layout/layout.jsx';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/authContext';
-
+import PrivateRoute from './Shared/components/PrivateRoute';
 
 const App = () => {
   const location = useLocation();
@@ -16,7 +16,7 @@ const App = () => {
 
   return (
     <AuthProvider>
-      {!isLoginPage && <Layout />}
+      {!isLoginPage && <PrivateRoute><Layout /></PrivateRoute>}
       <Routes>
         <Route path='/login' element={<Login/>} />
       </Routes>

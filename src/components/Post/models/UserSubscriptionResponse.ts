@@ -10,7 +10,8 @@ interface UserSubscriptionResponse {
         status: boolean,
         startDate: any,
         endDate: any,
-        phoneNumber: string
+        phoneNumber: string,
+        days: number
     }
   }
   

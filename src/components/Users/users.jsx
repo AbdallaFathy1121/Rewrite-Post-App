@@ -1,16 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { getAllUsers } from "./services/users.service.ts";
 import "./styles/users.style.css";
+import AuthContext from "../../context/authContext";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
 
+  const { logout } = useContext(AuthContext);
+
   const handleGetUsers = async () => {
-    const result = await getAllUsers();
-    if (result.data != null) {
-      setUsers(result.data);
+    const token = localStorage.getItem('token');
+    if (!token || typeof token !== 'string') { 
+      logout();
+    } else {
+      const result = await getAllUsers();
+      if (result.data != null) {
+        setUsers(result.data);
+      }
     }
-    console.log(result);
   };
 
   useEffect(() => {
@@ -29,7 +36,7 @@ const Users = () => {
                   <th scope="col">الصورة</th>
                   <th scope="col">الاسم</th>
                   <th scope="col">البريد الالكترونى</th>
-                  <th scope="col">عدد الاشتراكات</th>
+                  <th scope="col">عدد مرات اعادة الصياغة</th>
                   <th scope="col">الصلاحيات</th>
                 </tr>
               </thead>
@@ -38,9 +45,9 @@ const Users = () => {
                   <>
                     {users.map((item, index) => (
                       <tr>
-                        {item.picture ? (
+                        {item.Picture ? (
                           <td>
-                            <img src={item.picture} alt="" />
+                            <img src={item.Picture} alt="" />
                           </td>
                         ) : (
                           <td>
@@ -52,10 +59,10 @@ const Users = () => {
                             </div>
                           </td>
                         )}
-                        <td>{item.name}</td>
+                        <td>{item.Name}</td>
                         <td>{item.email}</td>
-                        <td>0</td>
-                        <td>{item.roleName}</td>
+                        <td>{item.PostNumbers}</td>
+                        <td>{item.RoleName}</td>
                       </tr>
                     ))}
                   </>
